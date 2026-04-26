@@ -927,6 +927,8 @@ const App = (() => {
             // 핵심 수정: 스크린 전환 (Create 탭 -> Project 탭)
             // force=true를 사용하여 stitchMode일 때도 탭 전환 허용
             switchTab('project', true);
+            $('#project-list-view').classList.add('hidden');
+            $('#project-detail-view').classList.remove('hidden');
             
             $('#stitch-view').classList.remove('hidden');
             $('#bottom-nav').classList.add('hidden');
