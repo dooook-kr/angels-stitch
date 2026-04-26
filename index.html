@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="사진을 십자수 도안으로 변환하고 디지털로 작업을 추적하세요">
+    <title>Antigravity Pattern Maker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+    <!-- Header -->
+    <header id="app-header">
+        <h1 id="header-title">Pattern Maker</h1>
+        <button id="header-action-btn" class="header-btn hidden" aria-label="액션"></button>
+    </header>
+
+    <!-- SCREEN: HOME -->
+    <section id="screen-home" class="screen active">
+        <div class="screen-content">
+            <div id="home-welcome" class="home-section">
+                <div class="welcome-icon">🧵</div>
+                <h2>Antigravity<br>Pattern Maker</h2>
+                <p class="welcome-subtitle">사진을 아름다운 십자수 도안으로</p>
+            </div>
+            <div id="home-recent" class="home-section hidden">
+                <h3 class="section-title">최근 프로젝트</h3>
+                <div id="home-recent-list" class="project-card-list"></div>
+            </div>
+            <div class="home-section">
+                <button id="home-create-btn" class="btn-primary btn-lg">
+                    <span class="btn-icon">＋</span> 새 도안 만들기
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- SCREEN: CREATE -->
+    <section id="screen-create" class="screen">
+        <div class="screen-content">
+            <!-- Step 1: Upload -->
+            <div id="create-step-upload" class="create-step active">
+                <div class="upload-area" id="upload-area">
+                    <div class="upload-placeholder">
+                        <span class="upload-icon">📷</span>
+                        <p>사진을 선택하세요</p>
+                        <p class="upload-hint">갤러리에서 이미지를 불러옵니다</p>
+                    </div>
+                    <input type="file" id="image-input" accept="image/*" hidden>
+                </div>
+            </div>
+            <!-- Step 2: Crop -->
+            <div id="create-step-crop" class="create-step">
+                <div class="crop-container"><canvas id="crop-canvas"></canvas></div>
+                <div class="step-actions">
+                    <button id="btn-back-upload" class="btn-secondary">← 다시 선택</button>
+                    <button id="btn-crop-next" class="btn-primary">다음 ➡️</button>
+                </div>
+            </div>
+            <!-- Step 3: Generating -->
+            <div id="create-step-generating" class="create-step">
+                <div class="generating-overlay">
+                    <div class="spinner"></div>
+                    <p class="generating-text">도안을 생성하고 있습니다...</p>
+                    <div class="progress-bar-container">
+                        <div id="generate-progress-bar" class="progress-bar"></div>
+                    </div>
+                    <p id="generate-progress-text" class="progress-text">0%</p>
+                </div>
+            </div>
+            <!-- Step 4: Preview & Settings -->
+            <div id="create-step-preview" class="create-step">
+                <div class="preview-container" style="position: relative; flex: 1; overflow: hidden; touch-action: none; background: #0f0f1a;">
+                    <canvas id="preview-canvas" style="display: block; width: 100%; height: 100%;"></canvas>
+                    <div style="position: absolute; top: 10px; right: 10px; z-index: 5;">
+                        <button id="btn-toggle-grid" style="background: rgba(30,33,64,0.8); color: #fff; padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); font-size: 13px; backdrop-filter: blur(4px); box-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: background 0.2s;">
+                            격자 끄기
+                        </button>
+                    </div>
+                    <div id="minimap-container" style="position: absolute; bottom: 10px; right: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.5); border-radius: 4px; overflow: hidden;">
+                        <canvas id="minimap-canvas" width="80" height="80"></canvas>
+                        <div id="minimap-viewport" style="position: absolute; border: 1px solid #e94560; background: rgba(233,69,96,0.2); box-sizing: border-box; pointer-events: none;"></div>
+                    </div>
+                    <div id="preview-loading-overlay" class="hidden" style="position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.6); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10;">
+                        <div class="spinner" style="width:30px; height:30px; border-width: 3px;"></div>
+                        <p style="margin-top:10px; font-size: 14px; color:#fff;">재계산 중...</p>
+                    </div>
+                </div>
+                <div class="settings-panel" style="flex: none; padding-top: 10px;">
+                    <div class="setting-group">
+                        <label class="setting-label"><span>격자 크기</span><span id="grid-size-value" class="setting-value">80</span></label>
+                        <input type="range" id="grid-size-slider" class="slider" min="30" max="150" value="80" step="5">
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label"><span>색상 수</span><span id="color-count-value" class="setting-value">15</span></label>
+                        <input type="range" id="color-count-slider" class="slider" min="5" max="30" value="15" step="1">
+                    </div>
+                </div>
+                <div class="step-actions">
+                    <button id="btn-back-crop" class="btn-secondary">← 다시 자르기</button>
+                    <button id="btn-generate-done" class="btn-primary">도안 생성하기 🎨</button>
+                </div>
+            </div>
+            <!-- Step 5: Done -->
+            <div id="create-step-done" class="create-step">
+                <div class="done-preview"><canvas id="done-preview-canvas"></canvas></div>
+                <div class="done-info">
+                    <div class="done-stat"><span class="stat-label">격자</span><span id="done-grid-info" class="stat-value">-</span></div>
+                    <div class="done-stat"><span class="stat-label">색상</span><span id="done-color-info" class="stat-value">-</span></div>
+                    <div class="done-stat"><span class="stat-label">총 스티치</span><span id="done-stitch-info" class="stat-value">-</span></div>
+                </div>
+                
+                <div class="thread-info-container">
+                    <h3 class="section-title" style="margin-top: 20px;">사용된 실 정보 (DMC)</h3>
+                    <div id="thread-list" class="thread-list">
+                        <!-- Dynamic thread items -->
+                    </div>
+                </div>
+
+                <div class="done-name-input">
+                    <label for="project-name-input" style="margin-top: 16px;">프로젝트 이름</label>
+                    <input type="text" id="project-name-input" placeholder="나의 십자수 도안" maxlength="50">
+                </div>
+                <div class="step-actions" style="flex-direction: column; gap: 12px; margin-top: 24px;">
+                    <button id="btn-save-project" class="btn-primary btn-lg">💾 프로젝트 저장하기</button>
+                    <div style="display: flex; gap: 12px; width: 100%;">
+                        <button id="btn-export-pdf" class="btn-secondary" style="flex: 1;" disabled>📄 도안 (PDF)</button>
+                        <button id="btn-enter-stitch" class="btn-secondary" style="flex: 1;" disabled>🪡 스티치 모드</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SCREEN: PROJECT -->
+    <section id="screen-project" class="screen">
+        <div class="screen-content">
+            <div id="project-list-view">
+                <div id="project-empty" class="empty-state">
+                    <span class="empty-icon">📂</span>
+                    <p>저장된 프로젝트가 없습니다</p>
+                    <p class="empty-hint">Create 탭에서 새 도안을 만들어보세요</p>
+                </div>
+                <div id="project-list" class="project-card-list"></div>
+            </div>
+            <!-- Project Detail View -->
+            <div id="project-detail-view" class="hidden">
+                <div class="detail-header">
+                    <button id="detail-back-btn" class="btn-icon-back">← 목록</button>
+                </div>
+                <div class="detail-scroll-content">
+                    <div class="done-preview"><canvas id="detail-preview-canvas"></canvas></div>
+                    <div class="done-info">
+                        <div class="done-stat"><span class="stat-label">격자</span><span id="detail-grid-info" class="stat-value">-</span></div>
+                        <div class="done-stat"><span class="stat-label">색상</span><span id="detail-color-info" class="stat-value">-</span></div>
+                        <div class="done-stat"><span class="stat-label">총 스티치</span><span id="detail-stitch-info" class="stat-value">-</span></div>
+                    </div>
+                    <div class="done-info" style="margin-top: 0;">
+                        <div class="done-stat" style="flex: 1;">
+                            <span class="stat-label">진행률</span>
+                            <span id="detail-progress-info" class="stat-value">0%</span>
+                            <div class="project-card-progress" style="margin-top: 6px;"><div id="detail-progress-bar" class="project-card-progress-fill" style="width:0%"></div></div>
+                        </div>
+                    </div>
+                    <div class="thread-info-container">
+                        <h3 class="section-title" style="margin-top: 20px;">사용된 실 정보 (DMC)</h3>
+                        <div id="detail-thread-list" class="thread-list"></div>
+                    </div>
+                    <div class="done-name-input">
+                        <label for="detail-name-input" style="margin-top: 16px;">프로젝트 이름</label>
+                        <input type="text" id="detail-name-input" placeholder="나의 십자수 도안" maxlength="50">
+                    </div>
+                    <div class="step-actions" style="flex-direction: column; gap: 12px; margin-top: 24px; padding-bottom: 24px;">
+                        <button id="detail-enter-stitch" class="btn-primary btn-lg">🪡 스티치 모드</button>
+                        <div style="display: flex; gap: 12px; width: 100%;">
+                            <button id="detail-export-pdf" class="btn-secondary" style="flex: 1;">📄 도안 (PDF)</button>
+                            <button id="detail-save-name" class="btn-secondary" style="flex: 1;">💾 이름 저장</button>
+                        </div>
+                        <button id="detail-delete-project" class="btn-danger" style="width: 100%;">🗑 프로젝트 삭제</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Stitch View (fullscreen, split) -->
+            <div id="stitch-view" class="hidden">
+                <div id="stitch-topbar">
+                    <button id="stitch-back-btn" class="stitch-btn">✕</button>
+                    <span id="stitch-project-name" class="stitch-title">프로젝트</span>
+                    <div id="stitch-progress-badge" class="progress-badge"><span id="stitch-progress-text">0%</span></div>
+                </div>
+                
+                <div id="stitch-canvas-container">
+                    <canvas id="stitch-canvas"></canvas>
+                    <div id="stitch-toolbar">
+                        <div class="zoom-controls">
+                            <input type="range" id="stitch-zoom-slider" min="50" max="1500" value="100">
+                            <span id="stitch-zoom-value">100%</span>
+                        </div>
+                        <button id="stitch-zoom-fit" class="stitch-btn" title="화면 맞춤">🔍</button>
+                        <button id="stitch-toggle-mode" class="stitch-btn" title="보기 모드 전환">🔄</button>
+                        <button id="stitch-export-pdf" class="stitch-btn" title="PDF 내보내기">📄</button>
+                    </div>
+                </div>
+                
+                <div id="stitch-progress-bar-container"><div id="stitch-progress-bar" class="progress-bar"></div></div>
+                
+                <div id="stitch-thread-panel">
+                    <div class="stitch-thread-header">
+                        <span>사용된 실 리스트</span>
+                        <span class="stitch-thread-hint">리스트를 선택하여 도안 하이라이트</span>
+                    </div>
+                    <div id="color-palette-list" class="palette-list">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bottom Navigation -->
+    <nav id="bottom-nav">
+        <button class="nav-item active" data-tab="home" id="nav-home">
+            <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
+        </button>
+        <button class="nav-item" data-tab="create" id="nav-create">
+            <span class="nav-icon">✂️</span><span class="nav-label">Create</span>
+        </button>
+        <button class="nav-item" data-tab="project" id="nav-project">
+            <span class="nav-icon">📁</span><span class="nav-label">Project</span>
+        </button>
+    </nav>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast hidden"></div>
+<!-- Confirm Dialog -->
+<div id="confirm-dialog" class="dialog-overlay hidden">
+    <div class="dialog-box">
+        <p id="confirm-message" class="dialog-message"></p>
+        <div class="dialog-actions">
+            <button id="confirm-cancel" class="btn-secondary">취소</button>
+            <button id="confirm-ok" class="btn-primary">확인</button>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="lib/jspdf.umd.min.js"></script>
+<script src="js/dmc-data.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/canvas.js"></script>
+<script src="js/pdf.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
