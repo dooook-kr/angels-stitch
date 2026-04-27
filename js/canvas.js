@@ -420,21 +420,17 @@ const StitchCanvas = (() => {
         
         let oldCw = canvas.width / (window.devicePixelRatio || 1);
         let oldCh = canvas.height / (window.devicePixelRatio || 1);
-        let oldPct = Math.round((scale / fitScale) * 100);
 
         fitScale = Math.min(sw, sh) * 0.9;
         
-        if (!preserveZoom || oldCw === 0 || isNaN(oldPct)) {
+        if (!preserveZoom || oldCw === 0) {
             scale = fitScale;
             offsetX = (cw - gridW * cellSize * scale) / 2;
             offsetY = (ch - gridH * cellSize * scale) / 2;
         } else {
-            scale = fitScale * (oldPct / 100);
+            // User requested absolute visual scale and position to remain identical
+            // Do not change offsetX, offsetY, or scale (unless it violates min bounds)
             scale = Math.max(fitScale * 1.0, Math.min(scale, fitScale * 15));
-            const dx = (cw - oldCw) / 2;
-            const dy = (ch - oldCh) / 2;
-            offsetX += dx;
-            offsetY += dy;
         }
         
         updateZoomSlider();
