@@ -841,20 +841,20 @@ const App = (() => {
                 
                 const skeins = Math.ceil(count / 2000);
                 const el = document.createElement('div');
-                el.className = 'thread-item';
+                el.className = 'palette-item';
                 
                 const isLight = (c.r * 0.299 + c.g * 0.587 + c.b * 0.114) > 186;
                 const textColor = isLight ? '#000' : '#fff';
                 
                 el.innerHTML = `
-                    <div class="thread-swatch" style="background: rgb(${c.r},${c.g},${c.b}); color: ${textColor}">${c.symbol || ''}</div>
-                    <div class="thread-details">
-                        <div class="thread-name">DMC ${c.code}</div>
-                        <div class="thread-dmc">${escapeHtml(c.name)}</div>
+                    <div class="palette-swatch" style="background: rgb(${c.r},${c.g},${c.b}); color: ${textColor}">${c.symbol || ''}</div>
+                    <div style="flex:1; display:flex; align-items:center; gap:6px; overflow:hidden;">
+                        <span class="palette-code" style="flex-shrink:0; width:60px;">DMC ${c.code}</span>
+                        <span style="font-size:9px; color:var(--text-secondary); opacity:0.7; text-overflow:ellipsis; white-space:nowrap; overflow:hidden; flex:1;">${escapeHtml(c.name)}</span>
                     </div>
-                    <div class="thread-stats">
-                        <div class="thread-count">${count}칸</div>
-                        <div class="thread-skeins">${skeins}타래</div>
+                    <div class="palette-count" style="flex-shrink:0; text-align:right;">
+                        <div>${count}칸</div>
+                        ${skeins > 0 ? `<div style="font-size:10px;">${skeins}타래</div>` : ''}
                     </div>
                 `;
                 listEl.appendChild(el);

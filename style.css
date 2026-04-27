@@ -940,7 +940,8 @@ input[type="text"]:focus {
 }
 
 #stitch-view.view-mode-palette #stitch-canvas-container,
-#stitch-view.view-mode-palette #stitch-progress-bar-container {
+#stitch-view.view-mode-palette #stitch-progress-bar-container,
+#stitch-view.view-mode-palette #stitch-toolbar {
     display: none;
 }
 #stitch-view.view-mode-palette #stitch-thread-panel {

@@ -456,7 +456,7 @@ const StitchCanvas = (() => {
         allItem.className = `palette-item palette-item-sticky ${activeColorIndex === null ? 'active' : ''}`;
         allItem.innerHTML = `
             <div class="palette-swatch" style="background:var(--text-primary); color:var(--bg-primary);">All</div>
-            <div class="palette-code" style="flex:1; font-size:14px;">전체 도안 보기</div>
+            <div class="palette-code" style="flex:1; font-size:14px; font-weight:700;">모든 실</div>
         `;
         allItem.onclick = () => {
             activeColorIndex = null;
@@ -473,9 +473,9 @@ const StitchCanvas = (() => {
             const fgColor = (c.r + c.g + c.b > 382) ? 'rgba(0,0,0,0.8)' : '#fff';
             item.innerHTML = `
                 <div class="palette-swatch" style="background:rgb(${c.r},${c.g},${c.b}); color:${fgColor};">${c.symbol || ''}</div>
-                <div style="flex:1; display:flex; align-items:center; gap:12px; overflow:hidden;">
-                    <span class="palette-code" style="flex-shrink:0; width:70px;">DMC ${c.code}</span>
-                    <span style="font-size:12px; color:var(--text-secondary); text-overflow:ellipsis; white-space:nowrap; overflow:hidden; flex:1;">${c.name}</span>
+                <div style="flex:1; display:flex; align-items:center; gap:6px; overflow:hidden;">
+                    <span class="palette-code" style="flex-shrink:0; width:60px;">DMC ${c.code}</span>
+                    <span style="font-size:9px; color:var(--text-secondary); opacity:0.7; text-overflow:ellipsis; white-space:nowrap; overflow:hidden; flex:1;">${c.name}</span>
                 </div>
                 <span class="palette-count" style="flex-shrink:0;">${count.toLocaleString()}칸</span>
             `;
