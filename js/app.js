@@ -706,14 +706,19 @@ const App = (() => {
     // === Project List ===
     function bindProjectFlow() {
         $('#stitch-back-btn').addEventListener('click', exitStitchMode);
-        $('#stitch-zoom-fit').addEventListener('click', () => {
-            if (typeof StitchCanvas !== 'undefined') StitchCanvas.fitToScreen();
-        });
-        $('#stitch-toggle-mode').addEventListener('click', () => {
-            if (typeof StitchCanvas !== 'undefined') StitchCanvas.toggleRenderMode();
-        });
-        $('#stitch-export-pdf').addEventListener('click', () => {
-            if (typeof PDF !== 'undefined') PDF.exportCurrent();
+        $('#stitch-view-mode-btn').addEventListener('click', () => {
+            const view = $('#stitch-view');
+            if (view.classList.contains('view-mode-canvas')) {
+                view.classList.remove('view-mode-canvas');
+                view.classList.add('view-mode-palette');
+            } else if (view.classList.contains('view-mode-palette')) {
+                view.classList.remove('view-mode-palette');
+            } else {
+                view.classList.add('view-mode-canvas');
+            }
+            if (typeof StitchCanvas !== 'undefined') {
+                setTimeout(() => StitchCanvas.fitToScreen(), 50);
+            }
         });
     }
 

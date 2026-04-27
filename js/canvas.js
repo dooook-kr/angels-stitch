@@ -79,9 +79,29 @@ const StitchCanvas = (() => {
             });
         }
         
-        const zoomFitBtn = document.getElementById('stitch-zoom-fit');
-        if (zoomFitBtn) {
-            zoomFitBtn.addEventListener('click', fitToScreen);
+        const zoomOutBtn = document.getElementById('stitch-zoom-out');
+        const zoomInBtn = document.getElementById('stitch-zoom-in');
+        
+        if (zoomOutBtn) {
+            zoomOutBtn.addEventListener('click', () => {
+                if (zoomSlider) {
+                    let val = parseInt(zoomSlider.value, 10);
+                    val = Math.max(100, val - 50);
+                    zoomSlider.value = val;
+                    zoomSlider.dispatchEvent(new Event('input'));
+                }
+            });
+        }
+        
+        if (zoomInBtn) {
+            zoomInBtn.addEventListener('click', () => {
+                if (zoomSlider) {
+                    let val = parseInt(zoomSlider.value, 10);
+                    val = Math.min(1500, val + 50);
+                    zoomSlider.value = val;
+                    zoomSlider.dispatchEvent(new Event('input'));
+                }
+            });
         }
     }
 
@@ -128,8 +148,8 @@ const StitchCanvas = (() => {
         const zoomFactor = Math.exp(delta * zoomIntensity);
         
         let newScale = scale * zoomFactor;
-        // 최소 50% ~ 최대 1500% (fitScale 기준)
-        newScale = Math.max(fitScale * 0.5, Math.min(newScale, fitScale * 15)); 
+        // 최소 100% ~ 최대 1500% (fitScale 기준)
+        newScale = Math.max(fitScale * 1.0, Math.min(newScale, fitScale * 15)); 
 
         const ratio = newScale / scale;
         offsetX = cx - (cx - offsetX) * ratio;
@@ -173,7 +193,7 @@ const StitchCanvas = (() => {
             const dist = getDist(pts[0], pts[1]);
             const newScale = initialPinchScale * (dist / initialPinchDist);
             // Clamp scale
-            const clamped = Math.max(fitScale * 0.5, Math.min(newScale, fitScale * 15));
+            const clamped = Math.max(fitScale * 1.0, Math.min(newScale, fitScale * 15));
             // Zoom toward center of pinch
             const cx = (pts[0].x + pts[1].x) / 2;
             const cy = (pts[0].y + pts[1].y) / 2;

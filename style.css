@@ -887,14 +887,10 @@ input[type="text"]:focus {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: rgba(30, 33, 64, 0.8);
-    backdrop-filter: blur(8px);
-    padding: 8px 12px;
-    border-radius: var(--radius-full);
 }
 
 .zoom-controls input[type="range"] {
-    width: 100px;
+    width: 180px;
 }
 
 .zoom-controls span {
@@ -928,6 +924,24 @@ input[type="text"]:focus {
     border-top: 1px solid var(--border);
     z-index: 10;
     overflow: hidden;
+}
+
+/* --- View Modes --- */
+#stitch-view.view-mode-canvas #stitch-canvas-container {
+    height: auto;
+    flex: 1;
+}
+#stitch-view.view-mode-canvas #stitch-thread-panel,
+#stitch-view.view-mode-canvas #stitch-progress-bar-container {
+    display: none;
+}
+
+#stitch-view.view-mode-palette #stitch-canvas-container,
+#stitch-view.view-mode-palette #stitch-progress-bar-container {
+    display: none;
+}
+#stitch-view.view-mode-palette #stitch-thread-panel {
+    flex: 1;
 }
 
 .stitch-thread-header {
