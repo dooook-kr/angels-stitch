@@ -86,7 +86,8 @@ const StitchCanvas = (() => {
             zoomOutBtn.addEventListener('click', () => {
                 if (zoomSlider) {
                     let val = parseInt(zoomSlider.value, 10);
-                    val = Math.max(100, val - 50);
+                    val = Math.floor((val - 1) / 50) * 50;
+                    val = Math.max(100, val);
                     zoomSlider.value = val;
                     zoomSlider.dispatchEvent(new Event('input'));
                 }
@@ -97,7 +98,8 @@ const StitchCanvas = (() => {
             zoomInBtn.addEventListener('click', () => {
                 if (zoomSlider) {
                     let val = parseInt(zoomSlider.value, 10);
-                    val = Math.min(1500, val + 50);
+                    val = Math.ceil((val + 1) / 50) * 50;
+                    val = Math.min(1500, val);
                     zoomSlider.value = val;
                     zoomSlider.dispatchEvent(new Event('input'));
                 }
@@ -406,18 +408,34 @@ const StitchCanvas = (() => {
     }
 
     // === Public Methods ===
-    function fitToScreen() {
+    function fitToScreen(preserveZoom = false) {
         const container = document.getElementById('stitch-canvas-container');
         if (!container) return;
         const cw = container.clientWidth;
         const ch = container.clientHeight;
+        if (cw === 0 || ch === 0) return; // Prevent zero-size bugs when hidden
+
         const sw = cw / (gridW * cellSize);
         const sh = ch / (gridH * cellSize);
         
+        let oldCw = canvas.width / (window.devicePixelRatio || 1);
+        let oldCh = canvas.height / (window.devicePixelRatio || 1);
+        let oldPct = Math.round((scale / fitScale) * 100);
+
         fitScale = Math.min(sw, sh) * 0.9;
-        scale = fitScale;
-        offsetX = (cw - gridW * cellSize * scale) / 2;
-        offsetY = (ch - gridH * cellSize * scale) / 2;
+        
+        if (!preserveZoom || oldCw === 0 || isNaN(oldPct)) {
+            scale = fitScale;
+            offsetX = (cw - gridW * cellSize * scale) / 2;
+            offsetY = (ch - gridH * cellSize * scale) / 2;
+        } else {
+            scale = fitScale * (oldPct / 100);
+            scale = Math.max(fitScale * 1.0, Math.min(scale, fitScale * 15));
+            const dx = (cw - oldCw) / 2;
+            const dy = (ch - oldCh) / 2;
+            offsetX += dx;
+            offsetY += dy;
+        }
         
         updateZoomSlider();
         render();
@@ -439,7 +457,7 @@ const StitchCanvas = (() => {
         
         // "All" item
         const allItem = document.createElement('div');
-        allItem.className = `palette-item ${activeColorIndex === null ? 'active' : ''}`;
+        allItem.className = `palette-item palette-item-sticky ${activeColorIndex === null ? 'active' : ''}`;
         allItem.innerHTML = `
             <div class="palette-swatch" style="background:var(--text-primary); color:var(--bg-primary);">All</div>
             <div class="palette-code" style="flex:1; font-size:14px;">전체 도안 보기</div>
@@ -459,11 +477,11 @@ const StitchCanvas = (() => {
             const fgColor = (c.r + c.g + c.b > 382) ? 'rgba(0,0,0,0.8)' : '#fff';
             item.innerHTML = `
                 <div class="palette-swatch" style="background:rgb(${c.r},${c.g},${c.b}); color:${fgColor};">${c.symbol || ''}</div>
-                <div style="flex:1; display:flex; flex-direction:column;">
-                    <span class="palette-code">DMC ${c.code}</span>
-                    <span style="font-size:11px; color:var(--text-secondary); margin-top:2px;">${c.name}</span>
+                <div style="flex:1; display:flex; align-items:center; gap:12px; overflow:hidden;">
+                    <span class="palette-code" style="flex-shrink:0; width:70px;">DMC ${c.code}</span>
+                    <span style="font-size:12px; color:var(--text-secondary); text-overflow:ellipsis; white-space:nowrap; overflow:hidden; flex:1;">${c.name}</span>
                 </div>
-                <span class="palette-count">${count.toLocaleString()}칸</span>
+                <span class="palette-count" style="flex-shrink:0;">${count.toLocaleString()}칸</span>
             `;
             item.onclick = () => {
                 activeColorIndex = i;

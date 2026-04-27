@@ -717,7 +717,7 @@ const App = (() => {
                 view.classList.add('view-mode-canvas');
             }
             if (typeof StitchCanvas !== 'undefined') {
-                setTimeout(() => StitchCanvas.fitToScreen(), 50);
+                setTimeout(() => StitchCanvas.fitToScreen(true), 50);
             }
         });
     }
