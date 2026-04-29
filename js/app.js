@@ -794,7 +794,7 @@ const App = (() => {
             </div>
             <div class="project-card-info">
                 <div class="project-card-name">${escapeHtml(project.name)}</div>
-                <div class="project-card-meta">${project.gridWidth}×${project.gridHeight} · ${project.colorCount}색 · ${pct}%</div>
+                <div class="project-card-meta">${project.gridWidth}×${project.gridHeight} · ${i18n.formatN('done.colorUnit', project.colorCount)} · ${pct}%</div>
                 <div class="project-card-progress"><div class="project-card-progress-fill" style="width:${pct}%"></div></div>
             </div>
             ${showDelete ? `<div class="project-card-actions"><button class="project-card-delete" data-delete-id="${project.id}">🗑</button></div>` : ''}
@@ -913,7 +913,7 @@ const App = (() => {
             };
             
             $('#detail-save-name').onclick = async () => {
-                const newName = $('#detail-name-input').value.trim() || '이름 없는 도안';
+                const newName = $('#detail-name-input').value.trim() || i18n.t('detail.placeholder');
                 project.name = newName;
                 await Storage.save(project);
                 showToast(i18n.t('toast.nameSaved'));

@@ -456,7 +456,7 @@ const StitchCanvas = (() => {
         allItem.className = `palette-item palette-item-sticky ${activeColorIndex === null ? 'active' : ''}`;
         allItem.innerHTML = `
             <div class="palette-swatch" style="background:var(--text-primary); color:var(--bg-primary);">All</div>
-            <div class="palette-code" style="flex:1; font-size:14px; font-weight:700;">모든 실</div>
+            <div class="palette-code" style="flex:1; font-size:14px; font-weight:700;">${i18n.t('stitch.allThreads')}</div>
         `;
         allItem.onclick = () => {
             activeColorIndex = null;
@@ -477,7 +477,7 @@ const StitchCanvas = (() => {
                     <span class="palette-code" style="flex-shrink:0; width:60px;">DMC ${c.code}</span>
                     <span style="font-size:9px; color:var(--text-secondary); opacity:0.7; text-overflow:ellipsis; white-space:nowrap; overflow:hidden; flex:1;">${c.name}</span>
                 </div>
-                <span class="palette-count" style="flex-shrink:0;">${count.toLocaleString()}칸</span>
+                <span class="palette-count" style="flex-shrink:0;">${i18n.formatN('detail.stitchUnit', count.toLocaleString())}</span>
             `;
             item.onclick = () => {
                 activeColorIndex = i;
