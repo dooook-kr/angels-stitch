@@ -84,7 +84,7 @@ const App = (() => {
         // Buttons
         $('#btn-back-upload').addEventListener('click', () => {
             state.sourceImage = null;
-            setCreateStep('upload');
+            $('#image-input').click();
         });
         $('#btn-crop-next').addEventListener('click', () => startGeneration(true));
         $('#btn-back-crop').addEventListener('click', () => setCreateStep('crop'));
