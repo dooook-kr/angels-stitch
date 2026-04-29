@@ -548,9 +548,8 @@ const App = (() => {
         const pd = state.patternData;
         if (!pd) return;
         setCreateStep('done');
-        // Reset button states
-        $('#btn-save-project').disabled = false;
-        $('#btn-save-project').textContent = '💾 프로젝트 저장하기';
+        // Disable buttons until auto-save completes
+        $('#btn-save-project').disabled = true;
         $('#btn-export-pdf').disabled = true;
         $('#btn-enter-stitch').disabled = true;
 
@@ -645,18 +644,11 @@ const App = (() => {
             threadList.appendChild(div);
         });
 
-        // Default name
-        const now = new Date();
-        $('#project-name-input').value = `도안 ${now.getMonth()+1}/${now.getDate()}`;
+        // Trigger auto-save with generated name
+        autoSaveProject();
     }
 
-    // === Save Project ===
-    async function saveProject() {
-        const pd = state.patternData;
-        if (!pd) return;
-        const name = $('#project-name-input').value.trim() || '이름 없는 도안';
-        const totalStitches = pd.width * pd.height;
-        // Generate thumbnail as data URL
+    function generateThumbnail(pd) {
         const thumbCanvas = document.createElement('canvas');
         thumbCanvas.width = pd.width;
         thumbCanvas.height = pd.height;
@@ -671,35 +663,70 @@ const App = (() => {
                 }
             }
         }
-        const thumbnail = thumbCanvas.toDataURL('image/png');
-        const project = {
-            name,
-            gridWidth: pd.width,
-            gridHeight: pd.height,
-            colorCount: pd.dmcPalette.length,
-            totalStitches,
-            thumbnail,
-            pixelMap: Array.from(pd.pixelMap),
-            dmcPalette: pd.dmcPalette,
-            progress: new Array(Math.ceil(totalStitches / 8)).fill(0),
-            completedCount: 0
-        };
+        return thumbCanvas.toDataURL('image/png');
+    }
+
+    async function autoSaveProject() {
+        const pd = state.patternData;
+        if (!pd) return;
+
+        $('#btn-save-project').disabled = true;
+        $('#btn-export-pdf').disabled = true;
+        $('#btn-enter-stitch').disabled = true;
+        $('#project-name-input').value = '';
+        $('#project-name-input').placeholder = '저장 중...';
+
         try {
+            const projects = await Storage.list();
+            const num = projects.length + 1;
+            const name = `Project ${String(num).padStart(2, '0')}`;
+            const totalStitches = pd.width * pd.height;
+            const project = {
+                name,
+                gridWidth: pd.width,
+                gridHeight: pd.height,
+                colorCount: pd.dmcPalette.length,
+                totalStitches,
+                thumbnail: generateThumbnail(pd),
+                pixelMap: Array.from(pd.pixelMap),
+                dmcPalette: pd.dmcPalette,
+                progress: new Array(Math.ceil(totalStitches / 8)).fill(0),
+                completedCount: 0
+            };
             const id = await Storage.save(project);
             state.currentProjectId = id;
-            showToast('프로젝트가 저장되었습니다 ✓');
-            
-            // Enable next actions
-            $('#btn-save-project').disabled = true;
-            $('#btn-save-project').textContent = '✅ 저장 완료';
+
+            $('#project-name-input').value = name;
+            $('#project-name-input').placeholder = 'Project 01';
+            $('#btn-save-project').disabled = false;
             $('#btn-export-pdf').disabled = false;
             $('#btn-enter-stitch').disabled = false;
-            
-            // We intentionally do not switch tabs immediately, allowing user to download PDF or enter stitch mode.
-            refreshProjectList(); // Just update the project tab in background
+
+            showToast(`"${name}"으로 저장되었습니다 ✓`);
+            refreshProjectList();
         } catch (err) {
-            console.error('[Save Error]', err);
-            showToast('저장 실패');
+            console.error('[Auto Save Error]', err);
+            $('#project-name-input').placeholder = 'Project 01';
+            $('#btn-save-project').disabled = false;
+            showToast('자동 저장 실패. 이름 입력 후 직접 저장해주세요.');
+        }
+    }
+
+    // === Save Project (rename) ===
+    async function saveProject() {
+        if (!state.currentProjectId) return;
+        const newName = $('#project-name-input').value.trim();
+        if (!newName) return;
+        try {
+            const project = await Storage.load(state.currentProjectId);
+            if (!project) return;
+            project.name = newName;
+            await Storage.save(project);
+            showToast('이름이 변경되었습니다 ✓');
+            refreshProjectList();
+        } catch (err) {
+            console.error('[Rename Error]', err);
+            showToast('이름 변경 실패');
         }
     }
 

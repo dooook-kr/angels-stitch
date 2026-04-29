@@ -122,14 +122,14 @@
 
                 <div class="done-name-input">
                     <label for="project-name-input" style="margin-top: 16px;">프로젝트 이름</label>
-                    <input type="text" id="project-name-input" placeholder="나의 십자수 도안" maxlength="50">
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <input type="text" id="project-name-input" placeholder="Project 01" maxlength="50" style="flex: 1;">
+                        <button id="btn-save-project" class="btn-secondary" style="white-space: nowrap;" disabled>이름 변경</button>
+                    </div>
                 </div>
                 <div class="step-actions" style="flex-direction: column; gap: 12px; margin-top: 24px;">
-                    <button id="btn-save-project" class="btn-primary btn-lg">💾 프로젝트 저장하기</button>
-                    <div style="display: flex; gap: 12px; width: 100%;">
-                        <button id="btn-export-pdf" class="btn-secondary" style="flex: 1;" disabled>📄 도안 (PDF)</button>
-                        <button id="btn-enter-stitch" class="btn-secondary" style="flex: 1;" disabled>🪡 스티치 모드</button>
-                    </div>
+                    <button id="btn-enter-stitch" class="btn-primary btn-lg" disabled>🪡 스티치 모드 입장</button>
+                    <button id="btn-export-pdf" class="btn-secondary btn-lg" disabled>📄 도안 PDF 다운로드</button>
                 </div>
             </div>
         </div>
