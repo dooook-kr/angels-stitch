@@ -26,6 +26,8 @@ const App = (() => {
         } catch (e) {
             console.error('[App] Storage init failed:', e);
         }
+        i18n.applyToDOM();
+        $('#lang-switch-btn').addEventListener('click', () => i18n.cycleLang());
         bindNav();
         bindCreateFlow();
         bindProjectFlow();
@@ -133,7 +135,7 @@ const App = (() => {
             if (state.createStep === 'crop') drawCropCanvas();
             else if (state.createStep === 'preview') PreviewCanvas.init();
         });
-        img.onerror = () => showToast('이미지를 불러올 수 없습니다');
+        img.onerror = () => showToast(i18n.t('toast.imageError'));
         img.src = URL.createObjectURL(file);
         e.target.value = '';
     }
@@ -425,7 +427,7 @@ const App = (() => {
                 }
             } else if (msg.type === 'error') {
                 if (activeWorker) { activeWorker.terminate(); activeWorker = null; }
-                showToast('도안 생성 중 오류가 발생했습니다');
+                showToast(i18n.t('toast.generateError'));
                 if (isInitial) setCreateStep('crop');
                 else $('#preview-loading-overlay').classList.add('hidden');
             }
@@ -615,7 +617,7 @@ const App = (() => {
 
         // Stats
         $('#done-grid-info').textContent = `${pd.width} × ${pd.height}`;
-        $('#done-color-info').textContent = `${pd.dmcPalette.length}색`;
+        $('#done-color-info').textContent = i18n.formatN('done.colorUnit', pd.dmcPalette.length);
         $('#done-stitch-info').textContent = (pd.width * pd.height).toLocaleString();
         
         // Thread Info List
@@ -637,8 +639,8 @@ const App = (() => {
                     <div class="thread-dmc">DMC ${c.code}</div>
                 </div>
                 <div class="thread-stats">
-                    <div class="thread-count">${count.toLocaleString()} st</div>
-                    <div class="thread-skeins">약 ${skeins}타래</div>
+                    <div class="thread-count">${i18n.formatN('done.stitchUnit', count.toLocaleString())}</div>
+                    <div class="thread-skeins">${i18n.formatN('done.skeinUnit', skeins)}</div>
                 </div>
             `;
             threadList.appendChild(div);
@@ -674,12 +676,12 @@ const App = (() => {
         $('#btn-export-pdf').disabled = true;
         $('#btn-enter-stitch').disabled = true;
         $('#project-name-input').value = '';
-        $('#project-name-input').placeholder = '저장 중...';
+        $('#project-name-input').placeholder = i18n.t('done.saving');
 
         try {
             const projects = await Storage.list();
             const num = projects.length + 1;
-            const name = `Project ${String(num).padStart(2, '0')}`;
+            const name = `${i18n.t('done.autoProjectName')} ${String(num).padStart(2, '0')}`;
             const totalStitches = pd.width * pd.height;
             const project = {
                 name,
@@ -702,13 +704,13 @@ const App = (() => {
             $('#btn-export-pdf').disabled = false;
             $('#btn-enter-stitch').disabled = false;
 
-            showToast(`"${name}"으로 저장되었습니다 ✓`);
+            showToast(`"${name}" ${i18n.t('toast.saved')}`);
             refreshProjectList();
         } catch (err) {
             console.error('[Auto Save Error]', err);
             $('#project-name-input').placeholder = 'Project 01';
             $('#btn-save-project').disabled = false;
-            showToast('자동 저장 실패. 이름 입력 후 직접 저장해주세요.');
+            showToast(i18n.t('toast.autoSaveFail'));
         }
     }
 
@@ -722,11 +724,11 @@ const App = (() => {
             if (!project) return;
             project.name = newName;
             await Storage.save(project);
-            showToast('이름이 변경되었습니다 ✓');
+            showToast(i18n.t('toast.renamed'));
             refreshProjectList();
         } catch (err) {
             console.error('[Rename Error]', err);
-            showToast('이름 변경 실패');
+            showToast(i18n.t('toast.renameFail'));
         }
     }
 
@@ -806,9 +808,9 @@ const App = (() => {
         if (showDelete) {
             card.querySelector('.project-card-delete').addEventListener('click', (e) => {
                 e.stopPropagation();
-                showConfirm(`"${project.name}"을(를) 삭제하시겠습니까?`, async () => {
+                showConfirm(i18n.formatN('confirm.deleteMessage', `"${project.name}"`), async () => {
                     await Storage.remove(project.id);
-                    showToast('삭제되었습니다');
+                    showToast(i18n.t('toast.deleted'));
                     refreshProjectList();
                     refreshHome();
                 });
@@ -827,9 +829,9 @@ const App = (() => {
             currentDetailProject = project;
 
             // Populate text info
-            $('#detail-name-input').value = project.name || '이름 없는 도안';
+            $('#detail-name-input').value = project.name || i18n.t('detail.placeholder');
             $('#detail-grid-info').textContent = `${project.gridWidth} × ${project.gridHeight}`;
-            $('#detail-color-info').textContent = `${project.colorCount}색`;
+            $('#detail-color-info').textContent = i18n.formatN('done.colorUnit', project.colorCount);
             
             const totalStitches = project.totalStitches || (project.gridWidth * project.gridHeight);
             const completed = project.completedCount || 0;
@@ -880,8 +882,8 @@ const App = (() => {
                         <span style="font-size:9px; color:var(--text-secondary); opacity:0.7; text-overflow:ellipsis; white-space:nowrap; overflow:hidden; flex:1;">${escapeHtml(c.name)}</span>
                     </div>
                     <div class="palette-count" style="flex-shrink:0; text-align:right;">
-                        <div>${count}칸</div>
-                        ${skeins > 0 ? `<div style="font-size:10px;">${skeins}타래</div>` : ''}
+                        <div>${i18n.formatN('detail.stitchUnit', count)}</div>
+                        ${skeins > 0 ? `<div style="font-size:10px;">${i18n.formatN('detail.skeinUnit', skeins)}</div>` : ''}
                     </div>
                 `;
                 listEl.appendChild(el);
@@ -902,10 +904,10 @@ const App = (() => {
                             project.pixelMap, project.dmcPalette,
                             project.name
                         );
-                        if (success) showToast('PDF 다운로드가 완료되었습니다');
+                        if (success) showToast(i18n.t('toast.pdfDone'));
                     } catch(e) {
                         console.error(e);
-                        showToast('PDF 생성 중 오류가 발생했습니다');
+                        showToast(i18n.t('toast.pdfError'));
                     }
                 }
             };
@@ -914,15 +916,15 @@ const App = (() => {
                 const newName = $('#detail-name-input').value.trim() || '이름 없는 도안';
                 project.name = newName;
                 await Storage.save(project);
-                showToast('이름이 저장되었습니다 ✓');
+                showToast(i18n.t('toast.nameSaved'));
                 refreshProjectList();
                 refreshHome();
             };
             
             $('#detail-delete-project').onclick = () => {
-                showConfirm(`"${project.name}"을(를) 삭제하시겠습니까?`, async () => {
+                showConfirm(i18n.formatN('confirm.deleteMessage', `"${project.name}"`), async () => {
                     await Storage.remove(project.id);
-                    showToast('삭제되었습니다');
+                    showToast(i18n.t('toast.deleted'));
                     exitProjectDetail();
                     refreshProjectList();
                     refreshHome();
@@ -936,7 +938,7 @@ const App = (() => {
             
         } catch (e) {
             console.error('[Detail]', e);
-            showToast('상세 정보를 불러올 수 없습니다.');
+            showToast(i18n.t('toast.detailError'));
         }
     }
 
@@ -950,7 +952,7 @@ const App = (() => {
     async function openStitchMode(projectId) {
         try {
             const project = await Storage.load(projectId);
-            if (!project) { showToast('프로젝트를 찾을 수 없습니다'); return; }
+            if (!project) { showToast(i18n.t('toast.projectNotFound')); return; }
             state.currentProjectId = projectId;
             state.stitchMode = true;
             $('#stitch-project-name').textContent = project.name;
@@ -970,7 +972,7 @@ const App = (() => {
             }
         } catch (e) {
             console.error('[Stitch] Open error:', e);
-            showToast('프로젝트를 열 수 없습니다');
+            showToast(i18n.t('toast.openError'));
         }
     }
 
@@ -1024,7 +1026,7 @@ const App = (() => {
 
         function toggleGrid() {
             showGrid = !showGrid;
-            $('#btn-toggle-grid').textContent = showGrid ? '격자 끄기' : '격자 켜기';
+            $('#btn-toggle-grid').textContent = i18n.t(showGrid ? 'crop.gridOff' : 'crop.gridOn');
             $('#btn-toggle-grid').style.background = showGrid ? 'rgba(30,33,64,0.8)' : 'rgba(233,69,96,0.8)';
             draw();
         }

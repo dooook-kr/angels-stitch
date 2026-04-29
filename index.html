@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="사진을 십자수 도안으로 변환하고 디지털로 작업을 추적하세요">
-    <title>Angel's Stitch</title>
+    <meta name="description" data-i18n="app.description" data-i18n-attr="content" content="사진으로 만든 나만의 도안 종이와 폰 어디서든 한땀한땀 기록하세요">
+    <title data-i18n="app.title">Angel's Stitch</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -14,6 +14,7 @@
 <div id="app">
     <!-- Header -->
     <header id="app-header">
+        <button id="lang-switch-btn" class="lang-btn">KO</button>
         <h1 id="header-title">Angel's Stitch</h1>
         <button id="header-action-btn" class="header-btn hidden" aria-label="액션"></button>
     </header>
@@ -27,12 +28,12 @@
                 <p class="welcome-subtitle">Cross Stitch Pattern Maker</p>
             </div>
             <div id="home-recent" class="home-section hidden">
-                <h3 class="section-title">최근 프로젝트</h3>
+                <h3 class="section-title" data-i18n="home.recentProjects">최근 프로젝트</h3>
                 <div id="home-recent-list" class="project-card-list"></div>
             </div>
             <div class="home-section">
                 <button id="home-create-btn" class="btn-primary btn-lg">
-                    <span class="btn-icon">＋</span> 새 도안 만들기
+                    <span class="btn-icon">＋</span> <span data-i18n="home.newPattern">시작하기</span>
                 </button>
             </div>
         </div>
@@ -46,8 +47,8 @@
                 <div class="upload-area" id="upload-area">
                     <div class="upload-placeholder">
                         <span class="upload-icon">📷</span>
-                        <p>사진을 선택하세요</p>
-                        <p class="upload-hint">갤러리에서 이미지를 불러옵니다</p>
+                        <p data-i18n="upload.selectPhoto">사진을 선택하세요</p>
+                        <p class="upload-hint" data-i18n="upload.hint">갤러리에서 이미지를 불러옵니다</p>
                     </div>
                     <input type="file" id="image-input" accept="image/*" hidden>
                 </div>
@@ -56,15 +57,15 @@
             <div id="create-step-crop" class="create-step">
                 <div class="crop-container"><canvas id="crop-canvas"></canvas></div>
                 <div class="step-actions">
-                    <button id="btn-back-upload" class="btn-secondary">← 다시 선택</button>
-                    <button id="btn-crop-next" class="btn-primary">다음 ➡️</button>
+                    <button id="btn-back-upload" class="btn-secondary">← <span data-i18n="upload.reselect">다시 선택</span></button>
+                    <button id="btn-crop-next" class="btn-primary"><span data-i18n="upload.next">다음 단계로</span></button>
                 </div>
             </div>
             <!-- Step 3: Generating -->
             <div id="create-step-generating" class="create-step">
                 <div class="generating-overlay">
                     <div class="spinner"></div>
-                    <p class="generating-text">도안을 생성하고 있습니다...</p>
+                    <p class="generating-text" data-i18n="generating.text">도안을 만들고 있어요...</p>
                     <div class="progress-bar-container">
                         <div id="generate-progress-bar" class="progress-bar"></div>
                     </div>
@@ -76,8 +77,8 @@
                 <div class="preview-container" style="position: relative; flex: 1; overflow: hidden; touch-action: none; background: #0f0f1a;">
                     <canvas id="preview-canvas" style="display: block; width: 100%; height: 100%;"></canvas>
                     <div style="position: absolute; top: 10px; right: 10px; z-index: 5;">
-                        <button id="btn-toggle-grid" style="background: rgba(30,33,64,0.8); color: #fff; padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); font-size: 13px; backdrop-filter: blur(4px); box-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: background 0.2s;">
-                            격자 끄기
+                        <button id="btn-toggle-grid" style="background: rgba(30,33,64,0.8); color: #fff; padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); font-size: 13px; backdrop-filter: blur(4px); box-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: background 0.2s;" data-i18n="crop.gridOff">
+                            격자 보기
                         </button>
                     </div>
                     <div id="minimap-container" style="position: absolute; bottom: 10px; right: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.5); border-radius: 4px; overflow: hidden;">
@@ -86,50 +87,50 @@
                     </div>
                     <div id="preview-loading-overlay" class="hidden" style="position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.6); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10;">
                         <div class="spinner" style="width:30px; height:30px; border-width: 3px;"></div>
-                        <p style="margin-top:10px; font-size: 14px; color:#fff;">재계산 중...</p>
+                        <p style="margin-top:10px; font-size: 14px; color:#fff;" data-i18n="crop.recalculating">계산중…</p>
                     </div>
                 </div>
                 <div class="settings-panel" style="flex: none; padding-top: 10px;">
                     <div class="setting-group">
-                        <label class="setting-label"><span>격자 크기</span><span id="grid-size-value" class="setting-value">80</span></label>
+                        <label class="setting-label"><span data-i18n="crop.gridSize">스티치 수</span><span id="grid-size-value" class="setting-value">80</span></label>
                         <input type="range" id="grid-size-slider" class="slider" min="30" max="150" value="80" step="5">
                     </div>
                     <div class="setting-group">
-                        <label class="setting-label"><span>색상 수</span><span id="color-count-value" class="setting-value">15</span></label>
+                        <label class="setting-label"><span data-i18n="crop.colorCount">색상 수</span><span id="color-count-value" class="setting-value">15</span></label>
                         <input type="range" id="color-count-slider" class="slider" min="5" max="30" value="15" step="1">
                     </div>
                 </div>
                 <div class="step-actions">
-                    <button id="btn-back-crop" class="btn-secondary">← 다시 자르기</button>
-                    <button id="btn-generate-done" class="btn-primary">도안 생성하기 🎨</button>
+                    <button id="btn-back-crop" class="btn-secondary">← <span data-i18n="crop.recrop">다시 자르기</span></button>
+                    <button id="btn-generate-done" class="btn-primary"><span data-i18n="crop.generate">도안 생성하기</span></button>
                 </div>
             </div>
             <!-- Step 5: Done -->
             <div id="create-step-done" class="create-step">
                 <div class="done-preview"><canvas id="done-preview-canvas"></canvas></div>
                 <div class="done-info">
-                    <div class="done-stat"><span class="stat-label">격자</span><span id="done-grid-info" class="stat-value">-</span></div>
-                    <div class="done-stat"><span class="stat-label">색상</span><span id="done-color-info" class="stat-value">-</span></div>
-                    <div class="done-stat"><span class="stat-label">총 스티치</span><span id="done-stitch-info" class="stat-value">-</span></div>
+                    <div class="done-stat"><span class="stat-label" data-i18n="done.grid">크기</span><span id="done-grid-info" class="stat-value">-</span></div>
+                    <div class="done-stat"><span class="stat-label" data-i18n="done.colors">색상</span><span id="done-color-info" class="stat-value">-</span></div>
+                    <div class="done-stat"><span class="stat-label" data-i18n="done.totalStitches">총 스티치</span><span id="done-stitch-info" class="stat-value">-</span></div>
                 </div>
                 
                 <div class="thread-info-container">
-                    <h3 class="section-title" style="margin-top: 20px;">사용된 실 정보 (DMC)</h3>
+                    <h3 class="section-title" style="margin-top: 20px;" data-i18n="done.threadInfo">실 정보 (DMC)</h3>
                     <div id="thread-list" class="thread-list">
                         <!-- Dynamic thread items -->
                     </div>
                 </div>
 
                 <div class="done-name-input">
-                    <label for="project-name-input" style="margin-top: 16px;">프로젝트 이름</label>
+                    <label for="project-name-input" style="margin-top: 16px;" data-i18n="done.projectName">프로젝트명</label>
                     <div style="display: flex; gap: 8px; align-items: center;">
                         <input type="text" id="project-name-input" placeholder="Project 01" maxlength="50" style="flex: 1;">
-                        <button id="btn-save-project" class="btn-secondary" style="white-space: nowrap;" disabled>이름 변경</button>
+                        <button id="btn-save-project" class="btn-secondary" style="white-space: nowrap;" disabled data-i18n="done.rename">이름 변경</button>
                     </div>
                 </div>
                 <div class="step-actions" style="flex-direction: column; gap: 12px; margin-top: 24px;">
-                    <button id="btn-enter-stitch" class="btn-primary btn-lg" disabled>🪡 스티치 모드 입장</button>
-                    <button id="btn-export-pdf" class="btn-secondary btn-lg" disabled>📄 도안 PDF 다운로드</button>
+                    <button id="btn-enter-stitch" class="btn-primary btn-lg" disabled>🪡 <span data-i18n="done.enterStitch">스티치 모드</span></button>
+                    <button id="btn-export-pdf" class="btn-secondary btn-lg" disabled>📄 <span data-i18n="done.downloadPdf">도안 다운로드</span></button>
                 </div>
             </div>
         </div>
@@ -141,8 +142,8 @@
             <div id="project-list-view">
                 <div id="project-empty" class="empty-state">
                     <span class="empty-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 1.45-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.55 6a2 2 0 0 1-1.94 1.5H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H18a2 2 0 0 1 2 2v2"/></svg></span>
-                    <p>저장된 프로젝트가 없습니다</p>
-                    <p class="empty-hint">Create 탭에서 새 도안을 만들어보세요</p>
+                    <p data-i18n="home.emptyState">저장된 프로젝트가 없습니다</p>
+                    <p class="empty-hint" data-i18n="home.emptyHint">새 도안을 만드세요</p>
                 </div>
                 <div id="project-list" class="project-card-list"></div>
             </div>
@@ -151,38 +152,38 @@
                 <div class="detail-header">
                     <button id="detail-back-btn" class="btn-icon-back">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                        목록
+                        <span data-i18n="detail.back">프로젝트 목록</span>
                     </button>
                 </div>
                 <div class="detail-scroll-content">
                     <div class="done-preview"><canvas id="detail-preview-canvas"></canvas></div>
                     <div class="done-info">
-                        <div class="done-stat"><span class="stat-label">격자</span><span id="detail-grid-info" class="stat-value">-</span></div>
-                        <div class="done-stat"><span class="stat-label">색상</span><span id="detail-color-info" class="stat-value">-</span></div>
-                        <div class="done-stat"><span class="stat-label">총 스티치</span><span id="detail-stitch-info" class="stat-value">-</span></div>
+                        <div class="done-stat"><span class="stat-label" data-i18n="done.grid">크기</span><span id="detail-grid-info" class="stat-value">-</span></div>
+                        <div class="done-stat"><span class="stat-label" data-i18n="done.colors">색상</span><span id="detail-color-info" class="stat-value">-</span></div>
+                        <div class="done-stat"><span class="stat-label" data-i18n="done.totalStitches">총 스티치</span><span id="detail-stitch-info" class="stat-value">-</span></div>
                     </div>
                     <div class="done-info" style="margin-top: 0;">
                         <div class="done-stat" style="flex: 1;">
-                            <span class="stat-label">진행률</span>
+                            <span class="stat-label" data-i18n="detail.progress">작업 진행률</span>
                             <span id="detail-progress-info" class="stat-value">0%</span>
                             <div class="project-card-progress" style="margin-top: 6px;"><div id="detail-progress-bar" class="project-card-progress-fill" style="width:0%"></div></div>
                         </div>
                     </div>
                     <div class="thread-info-container">
-                        <h3 class="section-title" style="margin-top: 20px;">실 목록</h3>
+                        <h3 class="section-title" style="margin-top: 20px;" data-i18n="detail.threadList">실 정보 (DMC)</h3>
                         <div id="detail-thread-list" class="thread-list"></div>
                     </div>
                     <div class="done-name-input">
-                        <label for="detail-name-input" style="margin-top: 16px;">프로젝트 이름</label>
+                        <label for="detail-name-input" style="margin-top: 16px;" data-i18n="detail.projectName">프로젝트명</label>
                         <div style="display: flex; gap: 8px; align-items: center;">
-                            <input type="text" id="detail-name-input" placeholder="나의 십자수 도안" maxlength="50" style="flex: 1;">
-                            <button id="detail-save-name" class="btn-secondary" style="white-space: nowrap;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>이름 변경</button>
+                            <input type="text" id="detail-name-input" data-i18n="detail.placeholder" data-i18n-attr="placeholder" placeholder="나의 도안" maxlength="50" style="flex: 1;">
+                            <button id="detail-save-name" class="btn-secondary" style="white-space: nowrap;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg><span data-i18n="detail.rename">이름 변경</span></button>
                         </div>
                     </div>
                     <div class="step-actions" style="flex-direction: column; gap: 12px; margin-top: 24px; padding-bottom: 24px;">
-                        <button id="detail-enter-stitch" class="btn-primary btn-lg"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="3" x2="21" y1="15" y2="15"/><line x1="9" x2="9" y1="3" y2="21"/><line x1="15" x2="15" y1="3" y2="21"/></svg>스티치 모드 입장</button>
-                        <button id="detail-export-pdf" class="btn-secondary btn-lg"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></svg>도안 PDF 다운로드</button>
-                        <button id="detail-delete-project" class="btn-danger" style="width: 100%;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg> 프로젝트 삭제</button>
+                        <button id="detail-enter-stitch" class="btn-primary btn-lg"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="3" x2="21" y1="15" y2="15"/><line x1="9" x2="9" y1="3" y2="21"/><line x1="15" x2="15" y1="3" y2="21"/></svg><span data-i18n="detail.enterStitch">스티치 모드</span></button>
+                        <button id="detail-export-pdf" class="btn-secondary btn-lg"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></svg><span data-i18n="detail.downloadPdf">도안 다운로드</span></button>
+                        <button id="detail-delete-project" class="btn-danger" style="width: 100%;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg><span data-i18n="detail.delete">프로젝트 삭제</span></button>
                     </div>
                 </div>
             </div>
@@ -212,8 +213,8 @@
                 
                 <div id="stitch-thread-panel">
                     <div class="stitch-thread-header">
-                        <span>실 목록</span>
-                        <span class="stitch-thread-hint">리스트를 선택하여 도안 하이라이트</span>
+                        <span data-i18n="stitch.threadList">실 정보 (DMC)</span>
+                        <span class="stitch-thread-hint" data-i18n="stitch.threadHint">작업할 실을 선택하세요</span>
                     </div>
                     <div id="color-palette-list" class="palette-list">
                         <!-- Dynamic content -->
@@ -226,13 +227,13 @@
     <!-- Bottom Navigation -->
     <nav id="bottom-nav">
         <button class="nav-item active" data-tab="home" id="nav-home">
-            <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span class="nav-label">Home</span>
+            <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span class="nav-label" data-i18n="nav.home">홈</span>
         </button>
         <button class="nav-item" data-tab="create" id="nav-create">
-            <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span><span class="nav-label">Create</span>
+            <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span><span class="nav-label" data-i18n="nav.create">만들기</span>
         </button>
         <button class="nav-item" data-tab="project" id="nav-project">
-            <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" x2="8.12" y1="4" y2="15.88"/><line x1="14.47" x2="20" y1="14.48" y2="20"/><line x1="8.12" x2="12" y1="8.12" y2="12"/></svg></span><span class="nav-label">Project</span>
+            <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" x2="8.12" y1="4" y2="15.88"/><line x1="14.47" x2="20" y1="14.48" y2="20"/><line x1="8.12" x2="12" y1="8.12" y2="12"/></svg></span><span class="nav-label" data-i18n="nav.project">프로젝트</span>
         </button>
     </nav>
 </div>
@@ -244,13 +245,14 @@
     <div class="dialog-box">
         <p id="confirm-message" class="dialog-message"></p>
         <div class="dialog-actions">
-            <button id="confirm-cancel" class="btn-secondary">취소</button>
-            <button id="confirm-ok" class="btn-primary">확인</button>
+            <button id="confirm-cancel" class="btn-secondary" data-i18n="confirm.cancel">취소</button>
+            <button id="confirm-ok" class="btn-primary" data-i18n="confirm.ok">확인</button>
         </div>
     </div>
 </div>
 
 <!-- Scripts -->
+<script src="js/i18n.js"></script>
 <script src="lib/jspdf.umd.min.js"></script>
 <script src="js/dmc-data.js"></script>
 <script src="js/storage.js"></script>

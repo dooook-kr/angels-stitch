@@ -131,6 +131,29 @@ input[type="text"]:focus {
     font-size: 18px;
 }
 
+#lang-switch-btn {
+    position: absolute;
+    left: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    background: transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+#lang-switch-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
+}
+
 /* --- Screen --- */
 .screen {
     flex: 1;
