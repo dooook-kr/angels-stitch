@@ -1112,31 +1112,41 @@ const App = (() => {
                 if (e.touches.length === 2) {
                     e.preventDefault();
                     const currentDist = getDist(e.touches);
-                    const zoomFactor = currentDist / touchStartDist;
-                    
+                    const rawFactor = currentDist / touchStartDist;
+
                     const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
                     const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-                    
+
                     const rect = canvas.getBoundingClientRect();
                     const x = (cx - rect.left) * window.devicePixelRatio;
                     const y = (cy - rect.top) * window.devicePixelRatio;
 
-                    vTransform.scale = touchStartTransform.scale * zoomFactor;
-                    vTransform.x = x - (x - touchStartTransform.x) * zoomFactor;
-                    vTransform.y = y - (y - touchStartTransform.y) * zoomFactor;
+                    const newScale = Math.max(getMinScale(), touchStartTransform.scale * rawFactor);
+                    const effectiveFactor = newScale / touchStartTransform.scale;
+                    vTransform.scale = newScale;
+                    vTransform.x = x - (x - touchStartTransform.x) * effectiveFactor;
+                    vTransform.y = y - (y - touchStartTransform.y) * effectiveFactor;
                     draw();
                 }
             }, {passive: false});
+        }
+
+        function getMinScale() {
+            const pd = state.patternData;
+            if (!pd || !canvas) return 0.01;
+            return Math.min(canvas.width / (pd.width * 10), canvas.height / (pd.height * 10));
         }
 
         function zoomToPoint(clientX, clientY, zoomFactor) {
             const rect = canvas.getBoundingClientRect();
             const x = (clientX - rect.left) * window.devicePixelRatio;
             const y = (clientY - rect.top) * window.devicePixelRatio;
-            
-            vTransform.x = x - (x - vTransform.x) * zoomFactor;
-            vTransform.y = y - (y - vTransform.y) * zoomFactor;
-            vTransform.scale *= zoomFactor;
+
+            const newScale = Math.max(getMinScale(), vTransform.scale * zoomFactor);
+            const actualFactor = newScale / vTransform.scale;
+            vTransform.x = x - (x - vTransform.x) * actualFactor;
+            vTransform.y = y - (y - vTransform.y) * actualFactor;
+            vTransform.scale = newScale;
             draw();
         }
 

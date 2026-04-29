@@ -204,17 +204,50 @@ const PDF = (() => {
         });
         doc.setTextColor(0, 0, 0);
 
-        /* 썸네일 — 나머지 공간 최대 활용 */
+        /* 썸네일 — 70% 크기, 남은 공간 중앙, 액자 프레임 */
         if (thumbnail) {
             try {
-                const imgY  = statsY + statsH + 6;
-                const maxW  = A4_W - 2*MARGIN;
-                const maxH  = A4_H - imgY - MARGIN;
+                const imgAreaY = statsY + statsH + 6;
+                const imgAreaH = A4_H - imgAreaY - MARGIN;
+                const maxW  = (A4_W - 2*MARGIN) * 0.70;
+                const maxH  = imgAreaH * 0.70;
                 const ratio = gridWidth / gridHeight;
                 let imgW, imgH;
                 if (ratio > maxW / maxH) { imgW = maxW; imgH = maxW / ratio; }
                 else                     { imgH = maxH; imgW = maxH * ratio; }
-                doc.addImage(thumbnail, 'JPEG', (A4_W - imgW)/2, imgY, imgW, imgH);
+
+                const imgX = (A4_W - imgW) / 2;
+                const imgY = imgAreaY + (imgAreaH - imgH) / 2;
+
+                const PAD  = 4;   // 매트(mat) 두께 mm
+                const GAP  = 1.5; // 이중 테두리 내부 선 간격
+
+                /* 그림자 */
+                doc.setFillColor(180, 178, 195);
+                doc.rect(imgX - PAD + 2.5, imgY - PAD + 2.5, imgW + 2*PAD, imgH + 2*PAD, 'F');
+
+                /* 크림색 매트 배경 */
+                doc.setFillColor(250, 248, 243);
+                doc.rect(imgX - PAD, imgY - PAD, imgW + 2*PAD, imgH + 2*PAD, 'F');
+
+                /* 썸네일 */
+                doc.addImage(thumbnail, 'JPEG', imgX, imgY, imgW, imgH);
+
+                /* 이미지 바로 바깥 얇은 선 */
+                doc.setDrawColor(160, 158, 175);
+                doc.setLineWidth(0.2);
+                doc.rect(imgX - 0.4, imgY - 0.4, imgW + 0.8, imgH + 0.8);
+
+                /* 액자 외곽선 (두꺼운 다크) */
+                doc.setDrawColor(55, 50, 75);
+                doc.setLineWidth(0.7);
+                doc.rect(imgX - PAD, imgY - PAD, imgW + 2*PAD, imgH + 2*PAD);
+
+                /* 액자 내부 장식선 (얇은 라이트) */
+                doc.setDrawColor(170, 165, 190);
+                doc.setLineWidth(0.25);
+                doc.rect(imgX - PAD + GAP, imgY - PAD + GAP,
+                         imgW + 2*PAD - 2*GAP, imgH + 2*PAD - 2*GAP);
             } catch (_) {}
         }
     }
@@ -317,7 +350,7 @@ const PDF = (() => {
         const LABEL_LEFT = 8;
         const gridX  = MARGIN + LABEL_LEFT;
         const gridY  = 32;
-        const availW = A4_W - gridX - MARGIN;
+        const availW = A4_W - gridX - MARGIN - LABEL_LEFT;  // 좌우 여백 대칭 (각 20mm)
         const availH = A4_H - gridY - MARGIN;
 
         const cellMM   = Math.min(availW / chunkW, availH / chunkH);
